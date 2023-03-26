@@ -1,0 +1,7 @@
+Nếu cô không đang nhập thì cô có thể tạo tài khoản mới.
+
+Nếu file script database bị lỗi thì cô có thể chạy lệnh tại thư mục project QuizHoot để tạo database ạ.
+
+  dotnet ef database update --context QuizHootContext 
+
+Sau đó thì tạo tài khoản ạ.
