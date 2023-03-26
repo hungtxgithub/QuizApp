@@ -10,6 +10,8 @@ using System.Security.Claims;
 using QuizHoot.Areas.Identity.Data;
 using QuizHoot.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
+using QuizHoot.Hubs;
 
 namespace QuizHoot.Controllers
 {
@@ -17,10 +19,12 @@ namespace QuizHoot.Controllers
     {
         private readonly QuizHootContext _context;
         private readonly UserManager<QuizHootUser> _userManager;
-        public QuizController(QuizHootContext ctx, UserManager<QuizHootUser> userManager)
+        private readonly IHubContext<SignalRServer> _hubContext;
+        public QuizController(QuizHootContext ctx, UserManager<QuizHootUser> userManager, IHubContext<SignalRServer> hubContext)
         {
             _context = ctx;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         public IActionResult List(string txtsearch)
@@ -271,6 +275,7 @@ namespace QuizHoot.Controllers
             quiz.CreatorId = _userManager.GetUserId(HttpContext.User);
             _context.Add(quiz);
             _context.SaveChanges();
+            _hubContext.Clients.All.SendAsync("CreateQuiz");
             return Redirect(returnUrl);
         }
 

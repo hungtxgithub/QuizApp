@@ -232,8 +232,20 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+
 @section scripts {
     <script>
+
+        var connection = new signalR.HubConnectionBuilder().withUrl("/SignalRServer").build();
+
+        connection.start();
+        //function onDelete(movieId) {
+        //    connection.invoke("DeleteMovie", movieId);
+        //}
+        connection.on("CreateQuiz", () => {
+            location.reload();
+        });
 
         $(".edit-quiz").on('click', function () {
             let quiz = $(this);

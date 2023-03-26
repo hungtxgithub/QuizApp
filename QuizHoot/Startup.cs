@@ -12,6 +12,8 @@ using QuizHoot.Data;
 using QuizHoot.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using QuizHoot.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using QuizHoot.Hubs;
 
 namespace QuizHoot
 {
@@ -28,9 +30,9 @@ namespace QuizHoot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<QuizHootContext>(options =>
-                     {
-                         options.UseSqlServer(Configuration.GetConnectionString("DbConnection"));
-                     });
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DbConnection"));
+            });
 
             // Start Identity Configure
             services.AddDbContext<QuizIdentityContext>(options =>
@@ -43,6 +45,7 @@ namespace QuizHoot
 
             // End Identity Part Configure
             services.AddControllersWithViews();
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,7 +74,9 @@ namespace QuizHoot
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
+                endpoints.MapHub<SignalRServer>("/SignalRServer");
             });
         }
+
     }
 }
