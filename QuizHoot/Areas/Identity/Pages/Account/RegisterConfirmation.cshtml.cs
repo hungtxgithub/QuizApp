@@ -7,6 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using QuizHoot.Areas.Identity.Data;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+using MimeKit.Text;
+using System;
+using QuizHoot.Services;
 
 namespace QuizHoot.Areas.Identity.Pages.Account
 {
@@ -54,9 +60,11 @@ namespace QuizHoot.Areas.Identity.Pages.Account
                     pageHandler: null,
                     values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                     protocol: Request.Scheme);
+                new EmailService().SendEmail(email, "Xác thực đăng ký tài khoản QuizApp", "Vui lòng click vào link sau để xác thực đăng ký tài khoản: " + EmailConfirmationUrl);
             }
 
             return Page();
         }
+
     }
 }

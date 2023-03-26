@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using QuizHoot.Areas.Identity.Data;
+using QuizHoot.Services;
 
 namespace QuizHoot.Areas.Identity.Pages.Account
 {
@@ -61,6 +62,7 @@ namespace QuizHoot.Areas.Identity.Pages.Account
                     Input.Email,
                     "Reset Password",
                     $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                new EmailService().SendEmail(Input.Email, "Xác thực reset mật khẩu QuizApp", "Vui lòng click vào link sau để xác thực reset mật khẩu QuizApp: " + callbackUrl + "&email="+ Input.Email);
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using QuizHoot.Areas.Identity.Data;
+using QuizHoot.Services;
 
 namespace QuizHoot.Areas.Identity.Pages.Account.Manage
 {
@@ -104,8 +105,10 @@ namespace QuizHoot.Areas.Identity.Pages.Account.Manage
                     Input.NewEmail,
                     "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                new EmailService().SendEmail(Input.NewEmail, "Xác thực thay đổi email QuizApp", "Vui lòng click vào link sau để xác thực thay đổi email tài khoản, email mới: " + callbackUrl);
 
                 StatusMessage = "Confirmation link to change email sent. Please check your email.";
+
                 return RedirectToPage();
             }
 
@@ -113,6 +116,7 @@ namespace QuizHoot.Areas.Identity.Pages.Account.Manage
             return RedirectToPage();
         }
 
+      
         public async Task<IActionResult> OnPostSendVerificationEmailAsync()
         {
             var user = await _userManager.GetUserAsync(User);
