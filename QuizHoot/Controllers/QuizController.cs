@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using QuizHoot.Areas.Identity.Data;
 using QuizHoot.Models.ViewModels;
+using Microsoft.AspNetCore.Http;
 
 namespace QuizHoot.Controllers
 {
@@ -22,12 +23,13 @@ namespace QuizHoot.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult List(int? id)
+        public IActionResult List(string txtsearch)
         {
 
-            List<Quiz> quizzes = (id is null)
+            List<Quiz> quizzes = (txtsearch is null || txtsearch.Trim() == "")
                 ? _context.Quizzes.Include(q => q.Creator).Where(q => q.Publish).ToList()
-                : _context.Quizzes.Include(q => q.Creator).Where(q => q.Publish && q.QuizId == id).ToList();
+                : _context.Quizzes.Include(q => q.Creator).Where(q => q.Publish && (q.QuizId.ToString().Contains(txtsearch.ToLower())
+                    || q.Title.ToLower().Contains(txtsearch.ToLower()))).ToList();
 
 
             var quizViewModels = new List<QuizViewModel>();
@@ -290,32 +292,74 @@ namespace QuizHoot.Controllers
             return Redirect(returnUrl);
         }
         // End Crud part
+        [HttpGet]
         public IActionResult ViewQuizResult(int? id)
         {
             var uId = _userManager.GetUserId(HttpContext.User);
 
             var takeQuizzes = _context.TakeQuizzes
+            .Include(tq => tq.Quiz)
+            .Where(tq => tq.UserId.Equals(uId))
+            .OrderByDescending(tq => tq.FinishAt)
+            .ToList();
+            return View(takeQuizzes);
+        }
+
+        [HttpPost]
+        public IActionResult ViewQuizResult(string? txtsearch)
+        {
+            var uId = _userManager.GetUserId(HttpContext.User);
+
+            if(txtsearch == null || txtsearch == "")
+            {
+                var takeQuizzes = _context.TakeQuizzes
                 .Include(tq => tq.Quiz)
                 .Where(tq => tq.UserId.Equals(uId))
                 .OrderByDescending(tq => tq.FinishAt)
                 .ToList();
-
-            return View(takeQuizzes);
-
+                return View(takeQuizzes);
+            } else
+            {
+                var takeQuizzes = _context.TakeQuizzes
+                .Include(tq => tq.Quiz)
+                .Where(tq => tq.UserId.Equals(uId) && tq.Quiz.Title.Contains(txtsearch))
+                .OrderByDescending(tq => tq.FinishAt)
+                .ToList();
+                return View(takeQuizzes);
+            }
+            
         }
 
+        [HttpGet]
         public IActionResult Manage(int? id)
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
                 return Redirect("/Identity/Account/Login");
             }
-
             var uId = _userManager.GetUserId(HttpContext.User);
             var quizzes = _context.Quizzes.Where(q => q.CreatorId.Equals(uId)).ToList();
             return View(quizzes);
         }
-
+        [HttpPost]
+        public IActionResult Manage(string? txtsearch)
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Identity/Account/Login");
+            }
+            var uId = _userManager.GetUserId(HttpContext.User);
+            if(txtsearch == null || txtsearch == "")
+            {
+                var quizzes = _context.Quizzes.Where(q => q.CreatorId.Equals(uId)).ToList();
+                return View(quizzes);
+            } else
+            {
+                var quizzes = _context.Quizzes.Where(q => q.CreatorId.Equals(uId) && q.Title.Contains(txtsearch)).ToList();
+                return View(quizzes);
+            }
+            
+        }
         public IActionResult AllResults(int id)
         {
             ViewBag.Id = id;

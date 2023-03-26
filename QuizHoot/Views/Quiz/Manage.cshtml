@@ -8,6 +8,17 @@
     Layout = "_CustomQuiz";
 }
 
+@section searchbox {
+    <form id="searchQuizCodeForm" asp-controller="Quiz" asp-action="Manage" method="post">
+        <div class="input-group">
+            <span style="z-index: 1;" class="input-group-text text-body">
+                <i class="fas fa-search" aria-hidden="true"></i>
+            </span>
+            <input name="txtsearch" type="text" class="form-control" placeholder="Search">
+        </div>
+    </form>
+}
+
 <!-- Modal Add -->
 <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

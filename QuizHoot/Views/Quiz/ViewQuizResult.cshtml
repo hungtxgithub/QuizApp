@@ -6,6 +6,18 @@
 
     Layout = "_CustomQuiz";
 }
+
+@section searchbox {
+    <form asp-controller="Quiz" asp-action="ViewQuizResult" method="post">
+        <div class="input-group">
+            <span style="z-index: 1;" class="input-group-text text-body">
+                <i class="fas fa-search" aria-hidden="true"></i>
+            </span>
+            <input name="txtsearch" type="text" class="form-control" placeholder="Search" required>
+        </div>
+    </form>
+}
+
 <div class="row">
     <div class="col-12">
         <div class="card">
